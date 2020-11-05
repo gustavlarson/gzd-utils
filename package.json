@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "clean": "rm -rf \"build/\"",
-    "test": "jest --config jestconfig.json",
+    "test": "jest --config jest.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --max-warnings 0 \"src/**/*.ts\""

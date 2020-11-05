@@ -1,6 +1,29 @@
-import { getAllGZD } from '../src/gzd-utils';
-import { Polygon } from 'geojson';
+import { getGZD, getAllGZD } from '../src/gzd-utils';
+import { Feature, Polygon, Position } from 'geojson';
 
+function validateCoordinates(
+  coordinates: Position[],
+  longitudeMin: number,
+  longitudeMax: number,
+  latitudeMin: number,
+  latitudeMax: number
+) {
+  expect(coordinates[0]).toEqual([longitudeMin, latitudeMin]);
+  expect(coordinates[1]).toEqual([longitudeMin, latitudeMax]);
+  expect(coordinates[2]).toEqual([longitudeMax, latitudeMax]);
+  expect(coordinates[3]).toEqual([longitudeMax, latitudeMin]);
+  expect(coordinates[4]).toEqual(coordinates[0]); //Valid GeoJSON polygon should be a LinearRing
+}
+
+function validateDataTypesAndName(zone: Feature, name: string): Position[] {
+  expect(zone.properties).toEqual(expect.objectContaining({ name: name }));
+  expect(zone.geometry.type).toEqual('Polygon');
+  const polygon = zone.geometry as Polygon;
+  expect(polygon.coordinates.length).toEqual(1);
+  const coordinates = polygon.coordinates[0];
+  expect(coordinates.length).toEqual(5);
+  return coordinates;
+}
 test('Number of features', () => {
   const gzdZones = getAllGZD();
   expect(gzdZones.features.length).toBe(1201);
@@ -71,4 +94,85 @@ test('Special cases', () => {
       expect.not.objectContaining({ properties: { name: '36X' } }),
     ])
   );
+});
+
+test('Get info on 33V and validate', () => {
+  const zone = getGZD('33V');
+  const coordinates = validateDataTypesAndName(zone, '33V');
+  validateCoordinates(coordinates, 12, 18, 56, 64);
+});
+
+test('Get info on 5D and validate', () => {
+  const zone = getGZD(5, 'D');
+  const coordinates = validateDataTypesAndName(zone, '5D');
+  validateCoordinates(coordinates, -156, -150, -72, -64);
+});
+
+test('Get info on 60X and validate', () => {
+  /*
+   * Special case: latitude band X is extended 4° north
+   */
+  const zone = getGZD('60X');
+  const coordinates = validateDataTypesAndName(zone, '60X');
+  validateCoordinates(coordinates, 174, 180, 72, 84);
+});
+
+test('Get info on invalid band should throw Error', () => {
+  expect(() => {
+    getGZD('0F');
+  }).toThrow();
+  expect(() => {
+    getGZD('61G');
+  }).toThrow();
+  expect(() => {
+    getGZD('33Z');
+  }).toThrow();
+});
+
+test('Special case around Norway', () => {
+  /*
+   * Special case around Norway:
+   * Zone 32V is extended 3° west and 31V is shrunk 3°
+   */
+  let zone = getGZD(31, 'V');
+  let coordinates = validateDataTypesAndName(zone, '31V');
+  validateCoordinates(coordinates, 0, 3, 56, 64);
+  zone = getGZD(32, 'V');
+  coordinates = validateDataTypesAndName(zone, '32V');
+  validateCoordinates(coordinates, 3, 12, 56, 64);
+});
+
+test('Special case around Svalbard', () => {
+  /*
+   * Special case around Svalbard:
+   * - 31X and 37X extended 3°
+   * - 33X and 35X extended 6°
+   */
+  let zone = getGZD(31, 'X');
+  let coordinates = validateDataTypesAndName(zone, '31X');
+  validateCoordinates(coordinates, 0, 9, 72, 84);
+
+  zone = getGZD(33, 'X');
+  coordinates = validateDataTypesAndName(zone, '33X');
+  validateCoordinates(coordinates, 9, 21, 72, 84);
+
+  zone = getGZD(35, 'X');
+  coordinates = validateDataTypesAndName(zone, '35X');
+  validateCoordinates(coordinates, 21, 33, 72, 84);
+
+  zone = getGZD(37, 'X');
+  coordinates = validateDataTypesAndName(zone, '37X');
+  validateCoordinates(coordinates, 33, 42, 72, 84);
+});
+
+test('Invalid bands around Svalbard should throw Error', () => {
+  expect(() => {
+    getGZD('32X');
+  }).toThrow();
+  expect(() => {
+    getGZD('34X');
+  }).toThrow();
+  expect(() => {
+    getGZD('36X');
+  }).toThrow();
 });
