@@ -1,37 +1,7 @@
 import { FeatureCollection, Feature } from 'geojson';
 
-const toPolygonFeature = (
-  name: string,
-  longitudeMin: number,
-  longitudeMax: number,
-  latitudeMin: number,
-  latitudeMax: number
-): Feature => {
-  return {
-    type: 'Feature',
-    properties: {
-      name,
-    },
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [longitudeMin, latitudeMin], // SW corner
-          [longitudeMin, latitudeMax], // NW corner
-          [longitudeMax, latitudeMax], // NE corner
-          [longitudeMax, latitudeMin], // SE corner
-          [longitudeMin, latitudeMin], // Back to SW to make valid GeoJson polygon
-        ],
-      ],
-    },
-  };
-};
-
 const latitudeBands = 'CDEFGJKJLMNPQRSTUVWX';
 
-/*
- * From https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
- */
 export const getAllGZD = (): FeatureCollection => {
   const features: Feature[] = [];
 
@@ -49,16 +19,17 @@ export const getAllGZD = (): FeatureCollection => {
       } else if (longitudeBand === 36 && latitudeBand === 'X') {
         continue;
       }
-      features.push(_getGZD(longitudeBand, latitudeBand));
+      features.push(getFeature(longitudeBand, latitudeBand));
     }
   }
+
   /*
    * Polar regions
    */
-  features.push(toPolygonFeature('A', -180, 0, -80, -90));
-  features.push(toPolygonFeature('B', 180, 0, -80, -90));
-  features.push(toPolygonFeature('X', -180, 0, 84, 90));
-  features.push(toPolygonFeature('Y', 180, 0, 84, 90));
+  features.push(getPolarRegionFeature('A'));
+  features.push(getPolarRegionFeature('B'));
+  features.push(getPolarRegionFeature('X'));
+  features.push(getPolarRegionFeature('Y'));
 
   return {
     type: 'FeatureCollection',
@@ -66,7 +37,16 @@ export const getAllGZD = (): FeatureCollection => {
   };
 };
 
+/**
+ * Get a GZD as GeoJson Feature
+ * @param longitudeBand Longitude band, range 1-60 or NaN for polar region
+ * @param latitudeBand Latitude band
+ */
 export function getGZD(longitudeBand: number, latitudeBand: string): Feature;
+/**
+ * Get a GZD as GeoJson Feature
+ * @param name Name of GZD in format <longitudeBand><latitudeBand>, e.g. 33V
+ */
 export function getGZD(name: string): Feature;
 export function getGZD(paramOne: string | number, paramTwo?: string): Feature {
   // Handle case when called only with string, parse it into latitudeBand/longitudeBand
@@ -74,14 +54,20 @@ export function getGZD(paramOne: string | number, paramTwo?: string): Feature {
     const name = paramOne;
     const longitudeBand = parseInt(name, 10);
     const latitudeBand = name.replace(longitudeBand.toString(), '');
-    return _getGZD(longitudeBand, latitudeBand);
+    return getFeature(longitudeBand, latitudeBand);
   } else if (typeof paramOne == 'number' && typeof paramTwo == 'string') {
-    return _getGZD(paramOne, paramTwo);
+    return getFeature(paramOne, paramTwo);
   }
   throw new TypeError();
 }
 
-function _getGZD(longitudeBand: number, latitudeBand: string): Feature {
+function getFeature(longitudeBand: number, latitudeBand: string): Feature {
+  // Handle special case around polar regions
+  if (isNaN(longitudeBand)) {
+    return getPolarRegionFeature(latitudeBand);
+  }
+
+  // Validate input
   validateGZD(longitudeBand, latitudeBand);
 
   const name = `${longitudeBand}${latitudeBand}`;
@@ -160,3 +146,45 @@ function validateGZD(longitudeBand: number, latitudeBand: string) {
     throw new RangeError('Invalid band');
   }
 }
+
+function getPolarRegionFeature(band: string): Feature {
+  switch (band) {
+    case 'A':
+      return toPolygonFeature('A', -180, 0, -90, -80);
+    case 'B':
+      return toPolygonFeature('B', 0, 180, -90, -80);
+    case 'X':
+      return toPolygonFeature('X', -180, 0, 84, 90);
+    case 'Y':
+      return toPolygonFeature('Y', 0, 180, 84, 90);
+    default:
+      throw new RangeError('Invalid band');
+  }
+}
+
+const toPolygonFeature = (
+  name: string,
+  longitudeMin: number,
+  longitudeMax: number,
+  latitudeMin: number,
+  latitudeMax: number
+): Feature => {
+  return {
+    type: 'Feature',
+    properties: {
+      name,
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [longitudeMin, latitudeMin], // SW corner
+          [longitudeMin, latitudeMax], // NW corner
+          [longitudeMax, latitudeMax], // NE corner
+          [longitudeMax, latitudeMin], // SE corner
+          [longitudeMin, latitudeMin], // Back to SW to make valid GeoJson polygon
+        ],
+      ],
+    },
+  };
+};

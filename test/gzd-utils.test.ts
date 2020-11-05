@@ -7,7 +7,7 @@ function validateCoordinates(
   longitudeMax: number,
   latitudeMin: number,
   latitudeMax: number
-) {
+): void {
   expect(coordinates[0]).toEqual([longitudeMin, latitudeMin]);
   expect(coordinates[1]).toEqual([longitudeMin, latitudeMax]);
   expect(coordinates[2]).toEqual([longitudeMax, latitudeMax]);
@@ -24,9 +24,12 @@ function validateDataTypesAndName(zone: Feature, name: string): Position[] {
   expect(coordinates.length).toEqual(5);
   return coordinates;
 }
-test('Number of features', () => {
+test('GZD count', () => {
   const gzdZones = getAllGZD();
-  expect(gzdZones.features.length).toBe(1201);
+  // 60 longitude bands, 20 latitude bands
+  // Four polar regions, three non-existing around Svalbard
+  const expectedZoneCount = 60 * 20 + 4 - 3;
+  expect(gzdZones.features.length).toBe(expectedZoneCount);
 });
 
 test('Correct datatypes and sanity check', () => {
@@ -175,4 +178,31 @@ test('Invalid bands around Svalbard should throw Error', () => {
   expect(() => {
     getGZD('36X');
   }).toThrow();
+  expect(() => {
+    getGZD('Not valid!');
+  }).toThrow();
+  expect(() => {
+    getGZD('33');
+  }).toThrow();
+  expect(() => {
+    getGZD('G');
+  }).toThrow();
+});
+
+test('Polar regions', () => {
+  let zone = getGZD('A');
+  let coordinates = validateDataTypesAndName(zone, 'A');
+  validateCoordinates(coordinates, -180, 0, -90, -80);
+
+  zone = getGZD('B');
+  coordinates = validateDataTypesAndName(zone, 'B');
+  validateCoordinates(coordinates, 0, 180, -90, -80);
+
+  zone = getGZD('X');
+  coordinates = validateDataTypesAndName(zone, 'X');
+  validateCoordinates(coordinates, -180, 0, 84, 90);
+
+  zone = getGZD('Y');
+  coordinates = validateDataTypesAndName(zone, 'Y');
+  validateCoordinates(coordinates, 0, 180, 84, 90);
 });
