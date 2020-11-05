@@ -1,0 +1,32 @@
+{
+  "name": "gzd-utils",
+  "version": "1.0.0",
+  "description": "Utilities for working with MGRS GZD and GeoJSON",
+  "main": "build/gzd-utils.js",
+  "types": "build/gzd-utils.d.ts",
+  "files": [
+    "build/**/*"
+  ],
+  "scripts": {
+    "clean": "rm -rf \"build/\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint --max-warnings 0 \"src/**/*.ts\""
+  },
+  "author": "Gustav Larson",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/geojson": "^7946.0.7",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.5"
+  },
+  "dependencies": {
+    "geojson": "^0.5.0"
+  }
+}
