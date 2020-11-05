@@ -2,20 +2,30 @@
   "name": "gzd-utils",
   "version": "1.0.0",
   "description": "Utilities for working with MGRS GZD and GeoJSON",
+  "author": "Gustav Larson",
+  "license": "ISC",
+  "keywords": [
+    "GeoJSON",
+    "MGRS",
+    "GZD"
+  ],
   "main": "build/gzd-utils.js",
   "types": "build/gzd-utils.d.ts",
   "files": [
     "build/**/*"
   ],
   "scripts": {
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm test && npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags",
     "clean": "rm -rf \"build/\"",
-    "test": "jest --config jest.json",
+    "test": "jest --config jest.json --forceExit",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --max-warnings 0 \"src/**/*.ts\""
   },
-  "author": "Gustav Larson",
-  "license": "ISC",
   "devDependencies": {
     "@types/geojson": "^7946.0.7",
     "@types/jest": "^26.0.15",
