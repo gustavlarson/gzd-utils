@@ -16,7 +16,8 @@
   "main": "build/gzd-utils.js",
   "types": "build/gzd-utils.d.ts",
   "files": [
-    "build/**/*"
+    "build/**/*.js",
+    "build/**/*.d.ts"
   ],
   "scripts": {
     "prepare": "npm run build",
