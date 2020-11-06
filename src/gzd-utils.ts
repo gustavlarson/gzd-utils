@@ -51,14 +51,13 @@ export function getGZD(name: string): Feature;
 export function getGZD(paramOne: string | number, paramTwo?: string): Feature {
   // Handle case when called only with string, parse it into latitudeBand/longitudeBand
   if (typeof paramOne === 'string') {
-    const name = paramOne;
+    const name: string = paramOne;
     const longitudeBand = parseInt(name, 10);
     const latitudeBand = name.replace(longitudeBand.toString(), '');
     return getFeature(longitudeBand, latitudeBand);
-  } else if (typeof paramOne == 'number' && typeof paramTwo == 'string') {
-    return getFeature(paramOne, paramTwo);
+  } else {
+    return getFeature(paramOne as number, paramTwo as string);
   }
-  throw new TypeError();
 }
 
 function getFeature(longitudeBand: number, latitudeBand: string): Feature {

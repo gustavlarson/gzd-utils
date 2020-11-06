@@ -121,15 +121,12 @@ test('Get info on 60X and validate', () => {
 });
 
 test('Get info on invalid band should throw Error', () => {
-  expect(() => {
-    getGZD('0F');
-  }).toThrow();
-  expect(() => {
-    getGZD('61G');
-  }).toThrow();
-  expect(() => {
-    getGZD('33Z');
-  }).toThrow();
+  expect(() => getGZD('0F')).toThrow();
+  expect(() => getGZD('61G')).toThrow();
+  expect(() => getGZD('33Z')).toThrow();
+  expect(() => getGZD('Not valid!')).toThrow();
+  expect(() => getGZD('33')).toThrow();
+  expect(() => getGZD('G')).toThrow();
 });
 
 test('Special case around Norway', () => {
@@ -169,24 +166,9 @@ test('Special case around Svalbard', () => {
 });
 
 test('Invalid bands around Svalbard should throw Error', () => {
-  expect(() => {
-    getGZD('32X');
-  }).toThrow();
-  expect(() => {
-    getGZD('34X');
-  }).toThrow();
-  expect(() => {
-    getGZD('36X');
-  }).toThrow();
-  expect(() => {
-    getGZD('Not valid!');
-  }).toThrow();
-  expect(() => {
-    getGZD('33');
-  }).toThrow();
-  expect(() => {
-    getGZD('G');
-  }).toThrow();
+  expect(() => getGZD('32X')).toThrow();
+  expect(() => getGZD('34X')).toThrow();
+  expect(() => getGZD('36X')).toThrow();
 });
 
 test('Polar regions', () => {
