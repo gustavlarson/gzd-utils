@@ -1,5 +1,11 @@
 # GZD Utils for Nodejs
 
+![travis](https://img.shields.io/travis/gustavlarson/gzd-utils)
+![codecov](https://img.shields.io/codecov/c/github/gustavlarson/gzd-utils?token=MGBMEMQLGE)
+![npm](https://img.shields.io/npm/v/gzd-utils)
+![size](https://img.shields.io/bundlephobia/minzip/gzd-utils)
+![license](https://img.shields.io/github/license/gustavlarson/gzd-utils)
+
 Utilities for calculating [MGRS GZDs](https://en.wikipedia.org/wiki/Military_Grid_Reference_System) in Nodejs.
 
 ## Installation
