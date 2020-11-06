@@ -29,7 +29,7 @@
     "test": "jest --config jest.json --forceExit",
     "test:coverage": "jest --config jest.json --forceExit --coverage --no-cache",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write .",
     "lint": "eslint --max-warnings 0 \"src/**/*.ts\""
   },
   "devDependencies": {

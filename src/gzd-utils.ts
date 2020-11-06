@@ -116,13 +116,7 @@ function getFeature(longitudeBand: number, latitudeBand: string): Feature {
     longitudeMin -= 3;
   }
 
-  return toPolygonFeature(
-    name,
-    longitudeMin,
-    longitudeMax,
-    latitudeMin,
-    latitudeMax
-  );
+  return toPolygonFeature(name, longitudeMin, longitudeMax, latitudeMin, latitudeMax);
 }
 
 function validateGZD(longitudeBand: number, latitudeBand: string) {
@@ -133,15 +127,10 @@ function validateGZD(longitudeBand: number, latitudeBand: string) {
     throw new RangeError('Invalid latitudeBand provided, should be one letter');
   }
   if (!latitudeBands.includes(latitudeBand)) {
-    throw new RangeError(
-      `Invalid latitudeBand provided, valid bands: ${latitudeBands}`
-    );
+    throw new RangeError(`Invalid latitudeBand provided, valid bands: ${latitudeBands}`);
   }
   // Handle invalid zones 32X, 34X, 36X around Svalbard
-  if (
-    latitudeBand === 'X' &&
-    (longitudeBand === 32 || longitudeBand === 34 || longitudeBand === 36)
-  ) {
+  if (latitudeBand === 'X' && (longitudeBand === 32 || longitudeBand === 34 || longitudeBand === 36)) {
     throw new RangeError('Invalid band');
   }
 }

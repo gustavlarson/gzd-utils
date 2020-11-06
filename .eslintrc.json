@@ -4,14 +4,9 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": [
-    "prettier",
-    "@typescript-eslint"
-  ],
+  "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
     "prettier/prettier": "error"
   },
-  "ignorePatterns": [
-    "build/"
-  ]
+  "ignorePatterns": ["build/"]
 }
