@@ -3,6 +3,10 @@ updates:
 - package-ecosystem: npm
   directory: "/"
   schedule:
-    interval: daily
-    time: "04:00"
+    interval: weekly
   open-pull-requests-limit: 10
+  allowed_updates:
+    - match:
+      update_type: "security"
+    - match:
+      update_type: "geojson"
