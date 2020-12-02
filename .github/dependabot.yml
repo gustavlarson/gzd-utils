@@ -5,8 +5,7 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
-  allowed_updates:
-    - match:
-      update_type: "security"
-    - match:
-      update_type: "geojson"
+  reviewers:
+    - "gustavlarson"
+  allow:
+    - dependency-name: "geojson"
