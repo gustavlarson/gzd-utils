@@ -1,6 +1,6 @@
 import { FeatureCollection, Feature } from 'geojson';
 
-const latitudeBands = 'CDEFGJKJLMNPQRSTUVWX';
+const latitudeBands = 'CDEFGHJKLMNPQRSTUVWX';
 
 export const getAllGZD = (): FeatureCollection => {
   const features: Feature[] = [];
