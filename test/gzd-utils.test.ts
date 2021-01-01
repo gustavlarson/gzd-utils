@@ -55,6 +55,14 @@ test('Correct datatypes and sanity check', () => {
   });
 });
 
+test('All zone names should be unique', () => {
+  const gzdZoneNameArray = getAllGZD().features.map((feature) => {
+    return feature.properties?.name;
+  });
+  const gzdZoneNameSet = new Set(gzdZoneNameArray);
+  expect(gzdZoneNameArray.length).toEqual(gzdZoneNameSet.size);
+});
+
 test('Expected zones', () => {
   const gzdZones = getAllGZD();
   expect(gzdZones.features).toEqual(
@@ -66,10 +74,13 @@ test('Expected zones', () => {
       expect.objectContaining({ properties: { name: '60C' } }),
       expect.objectContaining({ properties: { name: '60X' } }),
       expect.objectContaining({ properties: { name: 'B' } }),
+      expect.objectContaining({ properties: { name: '1H' } }),
 
       //Invalid zones
       expect.not.objectContaining({ properties: { name: '0C' } }),
       expect.not.objectContaining({ properties: { name: '1B' } }),
+      expect.not.objectContaining({ properties: { name: '26I' } }),
+      expect.not.objectContaining({ properties: { name: '26O' } }),
       expect.not.objectContaining({ properties: { name: '30Z' } }),
       expect.not.objectContaining({ properties: { name: '61F' } }),
       expect.not.objectContaining({ properties: { name: '32X' } }),
